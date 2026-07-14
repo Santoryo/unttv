@@ -1,6 +1,12 @@
 export default defineEventHandler(async (event) => {
-  const identifier = event.context.clientAddress || "localhost";
-  const ratelimitResponse = await ratelimit.limit(identifier);
+  if (!isUpstashEnabled()) return;
+
+  const identifier =
+    getRequestHeader(event, "cf-connecting-ip") ||
+    getRequestIP(event) ||
+    event.context.clientAddress ||
+    "unknown";
+  const ratelimitResponse = await limitRequest(identifier);
 
   if (!ratelimitResponse.success) {
     return new Response(null, {

@@ -1,4 +1,6 @@
 export default defineEventHandler(async (event) => {
+  if (!isUpstashEnabled()) return;
+
   const cached = await getCachedResult(event.path);
   if (cached != null) {
     const body = JSON.stringify(cached === "" ? null : cached);

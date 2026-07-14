@@ -1,20 +1,23 @@
 import "dotenv/config";
-import { RefreshingAuthProvider, type AccessToken } from "@twurple/auth";
+import { AppTokenAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
 
-const authProvider = new RefreshingAuthProvider({
-  clientId: process.env.TWITCH_CLIENT_ID,
-  clientSecret: process.env.TWITCH_CLIENT_SECRET,
+let twurpleInstance: ApiClient | undefined;
+
+function getTwurpleInstance() {
+  twurpleInstance ??= new ApiClient({
+    authProvider: new AppTokenAuthProvider(
+      process.env.TWITCH_CLIENT_ID!,
+      process.env.TWITCH_CLIENT_SECRET!
+    ),
+  });
+  return twurpleInstance;
+}
+
+export const twurple = new Proxy({} as ApiClient, {
+  get(_target, prop) {
+    const instance = getTwurpleInstance();
+    const value = Reflect.get(instance, prop);
+    return typeof value === "function" ? value.bind(instance) : value;
+  },
 });
-
-export const twurple = new ApiClient({ authProvider });
-
-authProvider.onRefresh(async (userId, newTokenData) => {
-  await redis.set("token", JSON.stringify(newTokenData));
-});
-
-export const setupTwurple = async () => {
-  if (authProvider.hasUser(process.env.TWITCH_CHANNEL_ID)) return;
-  const tokenData = (await redis.get("token")) as AccessToken;
-  authProvider.addUser(process.env.TWITCH_CHANNEL_ID, tokenData);
-};

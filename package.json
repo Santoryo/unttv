@@ -3,8 +3,9 @@
   "scripts": {
     "prepare": "nitropack prepare",
     "dev": "nitropack dev",
-    "build": "nitropack build",
-    "preview": "node .output/server/index.mjs"
+    "build": "nitropack build --preset cloudflare_module",
+    "preview": "wrangler dev .output/server/index.mjs --site .output/public --local",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@twurple/api": "^7.0.8",
@@ -13,5 +14,8 @@
     "@upstash/redis": "^1.28.2",
     "dotenv": "^16.4.1",
     "nitropack": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }
