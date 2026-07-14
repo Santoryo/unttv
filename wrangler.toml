@@ -2,6 +2,6 @@ name = "unttv"
 compatibility_date = "2024-11-12"
 main = ".output/server/index.mjs"
 
-[assets]
-directory = ".output/public"
-binding = "ASSETS"
+# Required for Nitro's __STATIC_CONTENT_MANIFEST import (even if public/ is empty)
+[site]
+bucket = ".output/public"

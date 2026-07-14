@@ -5,7 +5,7 @@
     "dev": "nitropack dev",
     "build": "nitropack build --preset cloudflare_module",
     "preview": "wrangler dev .output/server/index.mjs --site .output/public --local",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy --site .output/public"
   },
   "dependencies": {
     "@twurple/api": "^7.0.8",
